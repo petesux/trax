@@ -1,0 +1,315 @@
+
+/* PeteSux website styling */
+
+body {
+  background-color: #f4f1e9;
+  color: #252a26;
+}
+
+.navbar {
+  border-bottom: 3px solid #68735f;
+}
+
+.navbar-brand {
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+main {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+h1, h2, h3 {
+  letter-spacing: -0.02em;
+}
+
+a {
+  color: #53684d;
+}
+
+a:hover {
+  color: #303f2d;
+}
+
+/* Phone-friendly spacing */
+
+@media (max-width: 767px) {
+  main {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  h1 {
+    font-size: 1.8rem;
+  }
+}
+
+
+.album-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 1.25rem;
+  margin-top: 1.5rem;
+}
+
+.album-card {
+  min-width: 0;
+  text-align: center;
+}
+
+.album-card img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  border-radius: 4px;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.18);
+}
+
+.album-title {
+  margin-top: 0.6rem;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.album-year {
+  color: #68735f;
+  font-size: 0.9rem;
+}
+
+@media (max-width: 480px) {
+  .album-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+  }
+}
+
+
+.album-card a {
+  display: block;
+}
+
+.album-card a:hover img {
+  opacity: 0.85;
+  transform: scale(1.02);
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}
+
+.album-tracks {
+  padding-top: 1.5rem;
+  margin-bottom: 2rem;
+  scroll-margin-top: 5rem;
+}
+
+.album-tracks li {
+  margin-bottom: 0.25rem;
+}
+
+
+.album-tracks ol {
+  padding-left: 2.5rem;
+}
+
+.album-tracks li {
+  padding: 0.3rem 0;
+  border-bottom: 1px solid rgba(104, 115, 95, 0.2);
+}
+
+.track-title {
+  font-weight: 600;
+}
+
+.track-artist {
+  color: #53684d;
+}
+
+.track-duration {
+  color: #777;
+  font-size: 0.9em;
+}
+
+
+.lyrics-section {
+  padding: 1.5rem 0;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid rgba(104, 115, 95, 0.3);
+  scroll-margin-top: 5rem;
+  font-size: 0.9rem;
+}
+
+.lyrics-meta {
+  color: #68735f;
+  margin-bottom: 1rem;
+}
+
+.lyrics-text {
+  font-family: inherit;
+  font-size: 1rem;
+  line-height: 1.7;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  background: transparent;
+  border: none;
+  padding: 0;
+  color: inherit;
+}
+
+
+
+#artist-search-panel label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.4rem;
+}
+
+#artist-search {
+  display: block;
+  width: 100%;
+  max-width: 520px;
+  padding: 0.7rem 0.8rem;
+  margin-bottom: 1rem;
+  border: 1px solid #a4aa9c;
+  border-radius: 4px;
+  background: #fff;
+  color: #252a26;
+  font: inherit;
+}
+
+.artist-directory {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin: 1rem 0 2rem;
+}
+
+.artist-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.65rem 0.8rem;
+  border-bottom: 1px solid rgba(104, 115, 95, 0.2);
+}
+
+.artist-card a {
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.artist-card a:hover {
+  text-decoration: underline;
+}
+
+.artist-count {
+  color: #68735f;
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+
+
+.artist-card a {
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.artist-count {
+  color: #68735f;
+  font-size: 0.8rem;
+  white-space: nowrap;
+}
+
+.artist-section {
+  padding-top: 1.5rem;
+  margin-bottom: 2rem;
+  scroll-margin-top: 5rem;
+}
+
+.artist-section ol {
+  padding-left: 2rem;
+}
+
+.artist-track {
+  padding: 0.45rem 0;
+  border-bottom: 1px solid rgba(104, 115, 95, 0.2);
+}
+
+.artist-track-main {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1rem;
+}
+
+.track-duration {
+  color: #777;
+  font-size: 0.9em;
+  white-space: nowrap;
+}
+
+.artist-track-album {
+  margin-top: 0.15rem;
+  color: #68735f;
+  font-size: 0.9rem;
+}
+
+@media (max-width: 480px) {
+  .artist-directory {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+/* Expandable artist list */
+.artist-section {
+  margin: 0;
+  padding: 0;
+  border-bottom: 1px solid rgba(104, 115, 95, 0.25);
+}
+
+.artist-details {
+  margin: 0;
+}
+
+.artist-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.8rem 0.6rem;
+  cursor: pointer;
+  list-style-position: outside;
+}
+
+.artist-summary:hover {
+  background: rgba(104, 115, 95, 0.08);
+}
+
+.artist-name {
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.artist-count {
+  color: #68735f;
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+
+.artist-track-list {
+  padding-left: 2.5rem;
+  padding-right: 0.5rem;
+}
+
+#artist-search {
+  display: block;
+  width: 100%;
+  max-width: 520px;
+  padding: 0.7rem 0.8rem;
+  margin-bottom: 1rem;
+  border: 1px solid #a4aa9c;
+  border-radius: 4px;
+  background: #fff;
+  color: #252a26;
+  font: inherit;
+}

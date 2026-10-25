@@ -1,0 +1,40 @@
+
+---
+title: "The Collection"
+---
+
+Welcome to **PeteSux™**.
+
+*Good Music for Bad People.*
+
+An independent archive of songs, albums and artists.
+
+## Explore the collection
+
+::: {.grid}
+
+::: {.g-col-12 .g-col-md-4}
+### Albums
+
+Browse the PeteSux album collection, with artwork and release information.
+
+[Explore albums →](albums.qmd)
+:::
+
+::: {.g-col-12 .g-col-md-4}
+### Artists
+
+Explore the artists represented in the collection.
+
+[Browse artists →](artists.qmd)
+:::
+
+::: {.g-col-12 .g-col-md-4}
+### Songs
+
+Search and explore the complete song catalogue.
+
+[Find a song →](songs.qmd)
+:::
+
+:::

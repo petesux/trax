@@ -1,0 +1,33 @@
+
+project:
+  type: website
+  output-dir: docs
+
+website:
+  title: "PeteSux™"
+  description: "Good Music for Bad People"
+  navbar:
+    background: "#252a26"
+    foreground: "#f4f1e9"
+    left:
+      - text: "Home"
+        href: index.qmd
+      - text: "Albums"
+        href: albums.qmd
+      - text: "Artists"
+        href: artists.qmd
+      - text: "Songs"
+        href: songs.qmd
+      - text: "Lyrics"
+        href: lyrics.qmd
+
+format:
+  html:
+    theme: cosmo
+    css: styles.css
+    toc: false
+
+execute:
+  freeze: auto
+  echo: false
+  warning: false

@@ -1,0 +1,189 @@
+
+---
+title: "Artists"
+---
+
+```{r}
+source("data_prep.R")
+
+library(htmltools)
+library(tidyverse)
+
+# Find available lyrics files
+lyrics_files <- list.files(
+  "song_lyrics",
+  pattern = "\\.(csv|txt)$",
+  recursive = TRUE,
+  full.names = TRUE,
+  ignore.case = TRUE
+)
+
+lyrics_ids <- suppressWarnings(as.integer(
+  tools::file_path_sans_ext(basename(lyrics_files))
+))
+
+# Alphabetical list of artists
+artist_list <- df %>%
+  filter(!is.na(artist), artist != "") %>%
+  group_by(artist) %>%
+  summarise(
+    track_count = n_distinct(sort),
+    .groups = "drop"
+  ) %>%
+  arrange(tolower(artist))
+
+# Build a collapsed, expandable section for each artist
+artist_sections <- lapply(seq_len(nrow(artist_list)), function(i) {
+
+  artist_name <- artist_list$artist[i]
+
+  tracks <- df %>%
+    filter(artist == artist_name) %>%
+    arrange(cdseq, sort)
+
+  tags$section(
+    class = "artist-section",
+
+    tags$details(
+      class = "artist-details",
+
+      # Artist name and track count form the clickable row
+      tags$summary(
+        class = "artist-summary",
+
+        tags$span(
+          class = "artist-name",
+          as.character(artist_name)
+        ),
+
+        tags$span(
+          class = "artist-count",
+          paste(artist_list$track_count[i], "tracks")
+        )
+      ),
+
+      # Tracks appear only when the artist is expanded
+      tags$ol(
+        class = "artist-track-list",
+
+        lapply(seq_len(nrow(tracks)), function(j) {
+
+          track <- tracks[j, ]
+
+          song_id <- suppressWarnings(as.integer(track$sort))
+          song_title <- as.character(track$songname)
+          album_name <- as.character(track$`album name`)
+
+          # Link to lyrics if a matching file exists
+          title_element <- if (
+            !is.na(song_id) && song_id %in% lyrics_ids
+          ) {
+            tags$a(
+              href = paste0("lyrics.html#lyrics-", song_id),
+              song_title
+            )
+          } else {
+            tags$span(song_title)
+          }
+
+          tags$li(
+            class = "artist-track",
+
+            tags$div(
+              class = "artist-track-main",
+
+              title_element,
+
+              tags$span(
+                class = "track-duration",
+                as.character(track$time)
+              )
+            ),
+
+            tags$div(
+              class = "artist-track-album",
+
+              tags$a(
+                href = paste0("albums.html#album-", track$cdseq),
+                album_name
+              ),
+
+              " · ",
+              as.character(track$`psux year`)
+            )
+          )
+        })
+      )
+    )
+  )
+})
+
+# Artist search and expandable list
+artist_page <- tags$div(
+  id = "artist-list",
+
+  tags$label(
+    `for` = "artist-search",
+    "Search artists"
+  ),
+
+  tags$input(
+    id = "artist-search",
+    type = "search",
+    placeholder = "Type an artist name...",
+    autocomplete = "off"
+  ),
+
+  tags$div(
+    id = "artist-sections",
+    artist_sections
+  )
+)
+
+# Filter artists as the user types
+artist_search_script <- tags$script(HTML("
+(function () {
+  function initArtistSearch() {
+    const search = document.getElementById('artist-search');
+    const container = document.getElementById('artist-sections');
+
+    if (!search || !container) return;
+
+    if (search.dataset.initialized === 'true') return;
+    search.dataset.initialized = 'true';
+
+    search.addEventListener('input', function () {
+      const query = search.value.toLowerCase().trim();
+
+      container.querySelectorAll('.artist-section').forEach(function (section) {
+        const heading = section.querySelector('.artist-name');
+        const name = heading ? heading.textContent.toLowerCase() : '';
+
+        section.style.display = name.includes(query) ? '' : 'none';
+      });
+    });
+  }
+
+  function start() {
+    initArtistSearch();
+
+    if (!document.getElementById('artist-search')) {
+      setTimeout(start, 100);
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', start);
+  } else {
+    start();
+  }
+})();
+"))
+
+htmltools::browsable(
+  tagList(
+    artist_page,
+    artist_search_script
+  )
+)
+```

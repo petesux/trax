@@ -1,0 +1,111 @@
+
+---
+title: "Albums"
+---
+
+```{r}
+source("data_prep.R")
+
+library(htmltools)
+
+albums <- df %>%
+  distinct(cdseq, `psux year`, `album name`) %>%
+  arrange(cdseq)
+
+# Build the clickable album covers
+cards <- lapply(seq_len(nrow(albums)), function(i) {
+  album <- albums[i, ]
+  album_id <- paste0("album-", album$cdseq)
+
+  tags$div(
+    class = "album-card",
+    tags$a(
+      href = paste0("#", album_id),
+      tags$img(
+        src = paste0("covers/psx", album$cdseq, ".jpg"),
+        alt = as.character(album$`album name`),
+        loading = "lazy"
+      )
+    ),
+    tags$div(class = "album-title",
+             as.character(album$`album name`)),
+    tags$div(class = "album-year",
+             as.character(album$`psux year`))
+  )
+})
+
+# Build a track listing for each album
+
+# Build a track listing for each album
+
+# Identify which songs have lyric files
+lyrics_files <- list.files(
+  "song_lyrics",
+  pattern = "\\.csv$",
+  recursive = TRUE,
+  full.names = TRUE
+)
+
+lyrics_ids <- suppressWarnings(as.integer(
+  tools::file_path_sans_ext(basename(lyrics_files))
+))
+
+# Build a track listing for each album
+track_sections <- lapply(seq_len(nrow(albums)), function(i) {
+  album <- albums[i, ]
+
+  tracks <- df %>%
+    filter(cdseq == album$cdseq) %>%
+    arrange(sort) %>%
+    mutate(track_number = row_number())
+
+  tags$section(
+    id = paste0("album-", album$cdseq),
+    class = "album-tracks",
+    tags$h2(as.character(album$`album name`)),
+    tags$p(paste("Year:", album$`psux year`)),
+    tags$ol(
+      lapply(seq_len(nrow(tracks)), function(j) {
+        song_id <- suppressWarnings(as.integer(tracks$sort[j]))
+        song_title <- as.character(tracks$songname[j])
+
+        title_element <- if (
+          !is.na(song_id) && song_id %in% lyrics_ids
+        ) {
+          tags$a(
+            href = paste0("lyrics.html#lyrics-", song_id),
+            song_title
+          )
+        } else {
+          tags$span(song_title)
+        }
+
+        tags$li(
+          title_element,
+          tags$span(
+            class = "track-artist",
+            paste(" — ", as.character(tracks$artist[j]))
+          ),
+          tags$span(
+            class = "track-duration",
+            paste0(" (", as.character(tracks$time[j]), ")")
+          )
+        )
+      })
+    ),
+    tags$p(tags$a(href = "#top", "Back to album covers"))
+  )
+})
+
+
+
+htmltools::browsable(
+  tags$div(
+    tags$div(id = "top"),
+    tags$div(class = "album-grid", cards),
+    tags$hr(),
+    tags$h1("Track Listings"),
+    track_sections
+  )
+)
+```

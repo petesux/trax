@@ -1,0 +1,38 @@
+
+---
+title: "Songs"
+---
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+
+source("data_prep.R")
+
+reactable(
+  df,
+  searchable = TRUE,
+  filterable = TRUE,
+  sortable = TRUE,
+  defaultPageSize = 25,
+  pagination = TRUE,
+  highlight = TRUE,
+  compact = TRUE,
+  columns = list(
+    sort = colDef(show = FALSE),
+    cdseq = colDef(name = "CD", minWidth = 60),
+    year = colDef(minWidth = 65),
+    secs = colDef(show = FALSE),
+    time = colDef(minWidth = 80),
+    track = colDef(show = FALSE),
+    `psux year` = colDef(name = "PSUX Year", minWidth = 90),
+    songname = colDef(name = "Song", minWidth = 180),
+    artist = colDef(minWidth = 150),
+    `album name` = colDef(name = "Album", minWidth = 180)
+  ),
+  defaultColDef = colDef(
+    minWidth = 100
+  )
+)
+```

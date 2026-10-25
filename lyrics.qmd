@@ -1,0 +1,132 @@
+
+---
+title: "Lyrics"
+---
+
+```{r}
+source("data_prep.R")
+
+library(htmltools)
+library(tidyverse)
+
+# Find all lyric files, including those in subfolders
+lyrics_files <- list.files(
+  "song_lyrics",
+  pattern = "\\.(csv|txt)$",
+  recursive = TRUE,
+  full.names = TRUE,
+  ignore.case = TRUE
+)
+
+# Match filenames to trax sort values
+lyrics_index <- tibble(
+  sort = suppressWarnings(as.integer(
+    tools::file_path_sans_ext(basename(lyrics_files))
+  )),
+  file = lyrics_files
+) %>%
+  filter(!is.na(sort)) %>%
+  inner_join(
+    df %>% distinct(sort, songname, artist, cdseq, `album name`),
+    by = "sort"
+  ) %>%
+  arrange(sort) %>%
+  distinct(sort, .keep_all = TRUE)
+
+# Create a section for each song with available lyrics
+lyric_sections <- lapply(seq_len(nrow(lyrics_index)), function(i) {
+  song <- lyrics_index[i, ]
+
+  # Read the file as plain text, not as a CSV table
+lyric_lines <- readLines(
+  song$file,
+  warn = FALSE,
+  encoding = ""
+)
+
+# Convert to valid UTF-8, removing invalid byte sequences
+lyric_lines <- iconv(
+  lyric_lines,
+  from = "",
+  to = "UTF-8",
+  sub = ""
+)
+
+  # Remove a simple "lyrics" heading if present
+  if (length(lyric_lines) > 0 &&
+      trimws(lyric_lines[1]) == "lyrics") {
+    lyric_lines <- lyric_lines[-1]
+  }
+
+  # Join lines while preserving blank lines
+  text <- paste(lyric_lines, collapse = "\n")
+
+  # Convert HTML <br> tags to line breaks
+  text <- gsub(
+    "<br\\s*/?>",
+    "\n",
+    text,
+    ignore.case = TRUE
+  )
+
+  # Decode HTML entities such as &quot; and &amp;
+  text <- xml2::xml_text(
+    xml2::read_html(
+      paste0("<html><body><div>", text, "</div></body></html>")
+    )
+  )
+
+  # Normalize line endings
+  text <- gsub("\r\n?", "\n", text)
+
+  # Normalize unusual whitespace characters
+  text <- gsub("\u00A0", " ", text, fixed = TRUE)
+  text <- gsub("\u202F", " ", text, fixed = TRUE)
+  text <- gsub("\u200B", "", text, fixed = TRUE)
+  text <- gsub("\t+", " ", text)
+
+  # Remove spaces at the ends of lines
+  text <- gsub("[ \t]+\n", "\n", text)
+  text <- gsub("\n[ \t]+", "\n", text)
+
+  # Collapse repeated spaces within each line,
+  # while preserving line breaks and stanza spacing
+  lines <- strsplit(text, "\n", fixed = TRUE)[[1]]
+  lines <- gsub(" {2,}", " ", lines)
+  text <- paste(lines, collapse = "\n")
+
+  # Reduce excessive blank lines but retain stanza breaks
+  text <- gsub("\n{3,}", "\n\n", text)
+
+  # Remove whitespace at the beginning and end
+  text <- trimws(text)
+
+  tags$section(
+    id = paste0("lyrics-", song$sort),
+    class = "lyrics-section",
+    tags$h2(as.character(song$songname)),
+    tags$p(
+      class = "lyrics-meta",
+      paste(
+        as.character(song$artist),
+        "—",
+        as.character(song$`album name`)
+      )
+    ),
+    tags$pre(class = "lyrics-text", text),
+    tags$p(
+      tags$a(
+        href = paste0("albums.html#album-", song$cdseq),
+        "Back to album"
+      )
+    )
+  )
+})
+
+htmltools::browsable(
+  tags$div(
+    tags$p(paste(nrow(lyrics_index), "songs with lyrics")),
+    lyric_sections
+  )
+)
+```
